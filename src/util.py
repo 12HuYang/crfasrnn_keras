@@ -74,10 +74,29 @@ def get_preprocessed_image(file_name):
     if img_h > 500 or img_w > 500:
         raise ValueError('Please resize your images to be not bigger than 500 x 500.')
 
-    pad_h = 500 - img_h
-    pad_w = 500 - img_w
+    #pad_h = 500 - img_h
+    #pad_w = 500 - img_w
+    pad_h=100-img_h
+    pad_w=100-img_w
     im = np.pad(im, pad_width=((0, pad_h), (0, pad_w), (0, 0)), mode='constant', constant_values=0)
     return np.expand_dims(im.astype(np.float32), 0), img_h, img_w
+
+def get_preprocessed_label(file_name):
+    im = np.array(Image.open(file_name)).astype(np.float32)
+    assert im.ndim == 3, 'Only RGB images are supported.'
+    im = im - _IMAGENET_MEANS
+    im = im[:, :, ::-1]  # Convert to BGR
+    img_h, img_w, img_c = im.shape
+    assert img_c == 3, 'Only RGB images are supported.'
+    if img_h > 500 or img_w > 500:
+        raise ValueError('Please resize your images to be not bigger than 500 x 500.')
+
+    #pad_h = 500 - img_h
+    #pad_w = 500 - img_w
+    pad_h=100-img_h
+    pad_w=100-img_w
+    im = np.pad(im, pad_width=((0, pad_h), (0, pad_w), (0, 0)), mode='constant', constant_values=0)
+
 
 
 def get_label_image(probs, img_h, img_w):

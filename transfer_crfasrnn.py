@@ -15,14 +15,58 @@ from crfrnn_layer import CrfRnnLayer
 from keras.preprocessing.image import ImageDataGenerator
 import numpy as np
 import h5py
+import util
+from PIL import Image
 
 IMAGE_PATH = './images/'
-MASKS_PATH = '../masks/'
+MASKS_PATH = './masks/'
 
-image_ids=os.walk(IMAGE_PATH)
-mask_ids=os.walk(MASKS_PATH)
-print(image_ids)
-print(mask_ids)
+image_ids=[]
+mask_ids=[]
+
+channels, height, width = 3, 100, 100
+for root,dirs,image_ids in os.walk(IMAGE_PATH):
+    print(image_ids)
+for rroot,rdirs,mask_ids in os.walk(MASKS_PATH):
+    print(mask_ids)
+image_ids.sort()
+mask_ids.sort()
+X = np.zeros((len(mask_ids), height, width,3), dtype=np.float32)
+for i in range(len(image_ids)):
+    X[i],imgh,imgw=util.get_preprocessed_image(IMAGE_PATH+image_ids[i])
+
+Y = np.zeros((len(mask_ids), height, width,5), dtype=np.int32)
+labelpattern=[[255,255,255,255],    #white, background
+              [0,128,0,255],        #irrigate 01
+              [0,0,255,255],        #non-irrigate
+              [0,0,0,255],          #irrigate 02
+              [255,192,203,255]]    #irrigate 03
+for i in range(len(mask_ids)):
+    im = np.array(Image.open(MASKS_PATH+mask_ids[i])).astype(np.int32)
+    for j in range(len(labelpattern)):
+        temp=im-labelpattern[j]
+        temp=np.sum(temp,axis=2)
+        b=np.where(temp==0)
+        temparray=np.zeros(5)
+        temparray[j]=1
+        Y[i][b]=temparray
+    print(im)
+    #assert im.ndim == 3, 'Only RGB images are supported.'
+    #im = im - _IMAGENET_MEANS
+    #im = im[:, :, ::-1]  # Convert to BGR
+    #img_h, img_w, img_c = im.shape
+    #print(img_h,img_w,img_c)
+    #assert img_c == 3, 'Only RGB images are supported.'
+    #if img_h > 500 or img_w > 500:
+    #    raise ValueError('Please resize your images to be not bigger than 500 x 500.')
+
+
+    #pad_h = 500 - img_h
+    #pad_w = 500 - img_w
+    #im = np.pad(im, pad_width=((0, pad_h), (0, pad_w), (0, 0)), mode='constant', constant_values=0)
+    #print(im)
+
+
 
 def main():
     saved_model_path = 'crfrnn_keras_model.h5'
@@ -42,7 +86,8 @@ def main():
     #                print(len(d))
     #                #print(d)
 
-    channels, height, width = 3, 100, 100
+
+
     input_shape = (height, width, 3)
     img_input = Input(shape=input_shape)
     x = ZeroPadding2D(padding=(100, 100))(img_input)
@@ -139,7 +184,21 @@ def main():
             #print(test.shape)
     model.compile(loss = "categorical_crossentropy", optimizer = optimizers.SGD(lr=0.0001, momentum=0.9), metrics=["accuracy"])
 
-
+    for i in range(len(mask_ids)):
+        X_test=X[i]
+        Y_test=Y[i]
+        tempX=X.tolist()
+        tempY=Y.tolist()
+        X_train=tempX[0:i]+tempX[i+1:]
+        Y_train=tempY[0:i]+tempY[i+1:]
+        X_train=np.asarray(X_train)
+        Y_train=np.asarray(Y_train)
+        print(X_train.shape)
+        print(Y_train.shape)
+        model.fit(X_train,Y_train,epochs=20,batch_size=16)
+        preds=model.predict(X_test,Y_test)
+        print ("Loss = " + str(preds[0]))
+        print ("Test Accuracy = " + str(preds[1]))
 
 
     '''

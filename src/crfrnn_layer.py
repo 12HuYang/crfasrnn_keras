@@ -60,6 +60,7 @@ class CrfRnnLayer(Layer):
         super(CrfRnnLayer, self).__init__(**kwargs)
 
     def build(self, input_shape):
+        print('at build function')
         # Weights of the spatial kernel
         self.spatial_ker_weights = self.add_weight(name='spatial_ker_weights',
                                                    shape=(self.num_classes, self.num_classes),
@@ -81,6 +82,7 @@ class CrfRnnLayer(Layer):
         super(CrfRnnLayer, self).build(input_shape)
 
     def call(self, inputs):
+        print('at call function')
         unaries = tf.transpose(inputs[0][0, :, :, :], perm=(2, 0, 1))
         rgb = tf.transpose(inputs[1][0, :, :, :], perm=(2, 0, 1))
 
@@ -125,4 +127,5 @@ class CrfRnnLayer(Layer):
         return tf.transpose(tf.reshape(q_values, (1, c, h, w)), perm=(0, 2, 3, 1))
 
     def compute_output_shape(self, input_shape):
+        print('at compute_output_shape funciton')
         return input_shape

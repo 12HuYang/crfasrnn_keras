@@ -37,6 +37,7 @@ def get_crfrnn_model_def():
     """
 
     channels, height, weight = 3, 500, 500
+    #channels, height, weight = 3, 100, 100
 
     # Input
     input_shape = (height, weight, 3)
@@ -101,7 +102,6 @@ def get_crfrnn_model_def():
     # Final up-sampling and cropping
     upsample = Conv2DTranspose(21, (16, 16), strides=8, name='upsample', use_bias=False)(score_final)
     upscore = Cropping2D(((31, 37), (31, 37)))(upsample)
-
     output = CrfRnnLayer(image_dims=(height, weight),
                          num_classes=21,
                          theta_alpha=160.,
