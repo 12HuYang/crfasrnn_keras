@@ -176,8 +176,8 @@ def main():
     layer_names = [layer.name for layer in model.layers]
     print(layer_names)
     last=layer_names.index('score-fr')
-    #for i in range(8+6,last-3):
-     for i in range(8,8+6):
+    for i in range(8+3,last-2):
+    #for i in range(8,last):
         name=layer_names[i]
         c=list(f[name])
         model.layers[i].trainable=False
