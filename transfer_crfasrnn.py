@@ -182,7 +182,7 @@ def main():
             #test=model.layers[i].get_weights()
             #test=np.array(test)
             #print(test.shape)
-    for i in range(5,last):
+    for i in range(8,last):
         model.layers[i].trainable=False
     model.compile(loss = "categorical_crossentropy", optimizer = optimizers.SGD(lr=0.0001, momentum=0.9), metrics=["accuracy"])
 
