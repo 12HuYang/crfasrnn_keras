@@ -144,18 +144,18 @@ def main():
     score_pool4 = Conv2D(5, (1, 1), name='score-pool4')(pool4)
     score_pool4c = Cropping2D((5, 5))(score_pool4)
     score_fused = Add()([score2, score_pool4c])
-    score4 = Conv2DTranspose(5, (3, 3), strides=2, name='score4', use_bias=False)(score_fused)
+    score4 = Conv2DTranspose(5, (5, 5), strides=2, name='score4', use_bias=False)(score_fused)
 
     # Skip connections from pool3
     score_pool3 = Conv2D(5, (1, 1), name='score-pool3')(pool3)
-    score_pool3c = Cropping2D((9, 9))(score_pool3)
+    score_pool3c = Cropping2D((8, 8))(score_pool3)
 
     # Fuse things together
     score_final = Add()([score4, score_pool3c])
 
     # Final up-sampling and cropping
     upsample = Conv2DTranspose(5, (16, 16), strides=8, name='upsample', use_bias=False)(score_final)
-    upscore = Cropping2D(((31, 37), (31, 37)))(upsample)
+    upscore = Cropping2D(((39, 37), (39, 37)))(upsample)
 
     output = CrfRnnLayer(image_dims=(height, width),
                          num_classes=5,
