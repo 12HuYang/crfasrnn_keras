@@ -214,6 +214,7 @@ def main():
         preds=model.predict(X_test,Y_test)
         print ("Loss = " + str(preds[0]))
         print ("Test Accuracy = " + str(preds[1]))
+        print('for git')
 
 
     '''
