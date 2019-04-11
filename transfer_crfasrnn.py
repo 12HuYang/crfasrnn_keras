@@ -166,7 +166,7 @@ def main():
     layer_names = [layer.name for layer in model.layers]
     print(layer_names)
     last=layer_names.index('score-fr')
-    for i in range(5,last):
+    for i in range(12,last):
         name=layer_names[i]
         c=list(f[name])
         model.layers[i].trainable=False
@@ -185,8 +185,10 @@ def main():
     model.compile(loss = "categorical_crossentropy", optimizer = optimizers.SGD(lr=0.0001, momentum=0.9), metrics=["accuracy"])
 
     for i in range(len(mask_ids)):
-        X_test=X[i]
-        Y_test=Y[i]
+        X_test=np.asarray([X[i]])
+        Y_test=np.asarray([Y[i]])
+        print (X_test.shape)
+        print (Y_test.shape)
         tempX=X.tolist()
         tempY=Y.tolist()
         X_train=tempX[0:i]+tempX[i+1:]
@@ -195,7 +197,7 @@ def main():
         Y_train=np.asarray(Y_train)
         print(X_train.shape)
         print(Y_train.shape)
-        model.fit(X_train,Y_train,epochs=20,batch_size=16)
+        model.fit(X_train,Y_train,epochs=100,batch_size=16)
         preds=model.predict(X_test,Y_test)
         print ("Loss = " + str(preds[0]))
         print ("Test Accuracy = " + str(preds[1]))
