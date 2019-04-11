@@ -176,7 +176,7 @@ def main():
     layer_names = [layer.name for layer in model.layers]
     print(layer_names)
     last=layer_names.index('score-fr')
-    for i in range(11,last):
+    for i in range(11,last-3):
         name=layer_names[i]
         c=list(f[name])
         model.layers[i].trainable=False
@@ -210,7 +210,7 @@ def main():
         Y_train=np.asarray(Y_train)
         print(X_train.shape)
         print(Y_train.shape)
-        model.fit(X_train,Y_train,epochs=100,batch_size=16)
+        model.fit(X_train,Y_train,epochs=1000,batch_size=16)
         preds=model.predict(X_test,Y_test)
         print ("Loss = " + str(preds[0]))
         print ("Test Accuracy = " + str(preds[1]))
