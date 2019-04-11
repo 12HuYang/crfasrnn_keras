@@ -166,10 +166,10 @@ def main():
     layer_names = [layer.name for layer in model.layers]
     print(layer_names)
     last=layer_names.index('score-fr')
-    for i in range(12,last):
+    for i in range(0,last):
         name=layer_names[i]
         c=list(f[name])
-        model.layers[i].trainable=False
+        #model.layers[i].trainable=False
         if len(c)>0:
             print(c)
             d=list(f[name][c[0]])
@@ -182,6 +182,8 @@ def main():
             #test=model.layers[i].get_weights()
             #test=np.array(test)
             #print(test.shape)
+    for i in range(5,last):
+        model.layers[i].trainable=False
     model.compile(loss = "categorical_crossentropy", optimizer = optimizers.SGD(lr=0.0001, momentum=0.9), metrics=["accuracy"])
 
     for i in range(len(mask_ids)):
