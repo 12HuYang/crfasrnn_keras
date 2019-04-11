@@ -92,7 +92,17 @@ def main():
     img_input = Input(shape=input_shape)
     x = ZeroPadding2D(padding=(100, 100))(img_input)
     # VGG-16 convolution block 1
-    x = Conv2D(64, (3, 3), activation='relu', padding='valid', name='conv1_1')(x)
+    x = Conv2D(3, (3, 3), activation='relu', padding='valid', name='convpre1_1')(x)
+    x = Conv2D(3, (3, 3), activation='relu', padding='same', name='convpre1_2')(x)
+    x = MaxPooling2D((2, 2), strides=(1, 1), name='poolpre1')(x)
+
+    # VGG-16 convolution block 2
+    x = Conv2D(3, (3, 3), activation='relu', padding='same', name='convpre2_1')(x)
+    x = Conv2D(3, (3, 3), activation='relu', padding='same', name='convpre2_2')(x)
+    x = MaxPooling2D((2, 2), strides=(1, 1), name='poolpre2', padding='same')(x)
+
+    # VGG-16 convolution block 1
+    x = Conv2D(64, (3, 3), activation='relu', padding='same', name='conv1_1')(x)
     x = Conv2D(64, (3, 3), activation='relu', padding='same', name='conv1_2')(x)
     x = MaxPooling2D((2, 2), strides=(2, 2), name='pool1')(x)
 
@@ -134,7 +144,7 @@ def main():
     score_pool4 = Conv2D(5, (1, 1), name='score-pool4')(pool4)
     score_pool4c = Cropping2D((5, 5))(score_pool4)
     score_fused = Add()([score2, score_pool4c])
-    score4 = Conv2DTranspose(5, (4, 4), strides=2, name='score4', use_bias=False)(score_fused)
+    score4 = Conv2DTranspose(5, (3, 3), strides=2, name='score4', use_bias=False)(score_fused)
 
     # Skip connections from pool3
     score_pool3 = Conv2D(5, (1, 1), name='score-pool3')(pool3)
@@ -166,24 +176,25 @@ def main():
     layer_names = [layer.name for layer in model.layers]
     print(layer_names)
     last=layer_names.index('score-fr')
-    for i in range(0,last):
+    for i in range(8,last):
         name=layer_names[i]
         c=list(f[name])
-        #model.layers[i].trainable=False
+        model.layers[i].trainable=False
         if len(c)>0:
             print(c)
             d=list(f[name][c[0]])
             print(d)
             weight=[f[name][c[0]][d[1]],f[name][c[0]][d[0]]]
             weight=np.asarray(weight)
+            print(i)
             model.layers[i].set_weights(weight)
             #print(weight[0].shape)
             #print(weight[1].shape)
             #test=model.layers[i].get_weights()
             #test=np.array(test)
             #print(test.shape)
-    for i in range(5,last):
-        model.layers[i].trainable=False
+    #for i in range(5,last):
+    #    model.layers[i].trainable=False
     model.compile(loss = "categorical_crossentropy", optimizer = optimizers.SGD(lr=0.0001, momentum=0.9), metrics=["accuracy"])
 
     for i in range(len(mask_ids)):
