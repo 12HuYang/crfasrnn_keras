@@ -30,12 +30,34 @@ custom_module = high_dim_filter_loader.custom_module
 
 
 def _diagonal_initializer(shape):
-    return np.eye(shape[0], shape[1], dtype=np.float32)
-
+    inits=np.eye(shape[0], shape[1], dtype=np.float32)
+    print('diagonal initializer')
+    print(inits)
+    return inits
 
 def _potts_model_initializer(shape):
     return -1 * _diagonal_initializer(shape)
 
+def bilateral_ker_weights(shape):
+    inits=np.ones((shape[0],shape[1]),dtype=np.float32)
+    weight=4.664008
+    ans=np.multiply(inits,weight)
+    print(ans)
+    return ans
+
+def compatibility_matrix(shape):
+    weight=-0.70122886
+    inits=np.ones((shape[0],shape[1]),dtype=np.float32)
+    ans=np.multiply(inits,weight)
+    print(ans)
+    return ans
+
+def spatial_ker_weights(shape):
+    weight=2.6849225
+    inits=np.ones((shape[0],shape[1]),dtype=np.float32)
+    ans=np.multiply(inits,weight)
+    print(ans)
+    return ans
 
 class CrfRnnLayer(Layer):
     """ Implements the CRF-RNN layer described in:
@@ -64,19 +86,22 @@ class CrfRnnLayer(Layer):
         # Weights of the spatial kernel
         self.spatial_ker_weights = self.add_weight(name='spatial_ker_weights',
                                                    shape=(self.num_classes, self.num_classes),
-                                                   initializer=_diagonal_initializer,
+                                                   #initializer=_diagonal_initializer,
+                                                   initializer=spatial_ker_weights,
                                                    trainable=True)
 
         # Weights of the bilateral kernel
         self.bilateral_ker_weights = self.add_weight(name='bilateral_ker_weights',
                                                      shape=(self.num_classes, self.num_classes),
-                                                     initializer=_diagonal_initializer,
+                                                     #initializer=_diagonal_initializer,
+                                                     initializer=bilateral_ker_weights,
                                                      trainable=True)
 
         # Compatibility matrix
         self.compatibility_matrix = self.add_weight(name='compatibility_matrix',
                                                     shape=(self.num_classes, self.num_classes),
-                                                    initializer=_potts_model_initializer,
+                                                    #initializer=_potts_model_initializer,
+                                                    initializer=compatibility_matrix,
                                                     trainable=True)
 
         super(CrfRnnLayer, self).build(input_shape)
