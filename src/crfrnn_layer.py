@@ -42,6 +42,7 @@ def bilateral_ker_weights(shape):
     inits=np.ones((shape[0],shape[1]),dtype=np.float32)
     weight=4.664008
     ans=np.multiply(inits,weight)
+    np.fill_diagonal(ans,1.0)
     print(ans)
     return ans
 
@@ -49,6 +50,7 @@ def compatibility_matrix(shape):
     weight=-0.70122886
     inits=np.ones((shape[0],shape[1]),dtype=np.float32)
     ans=np.multiply(inits,weight)
+    np.fill_diagonal(ans,1.0)
     print(ans)
     return ans
 
@@ -56,6 +58,7 @@ def spatial_ker_weights(shape):
     weight=2.6849225
     inits=np.ones((shape[0],shape[1]),dtype=np.float32)
     ans=np.multiply(inits,weight)
+    np.fill_diagonal(ans,1.0)
     print(ans)
     return ans
 
