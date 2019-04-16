@@ -211,7 +211,7 @@ def main():
         Y_train=np.asarray(Y_train)
         print(X_train.shape)
         print(Y_train.shape)
-        model.fit(X_train,Y_train,epochs=150,batch_size=4)
+        model.fit(X_train,Y_train,epochs=150,batch_size=16)
         #preds=model.predict(X_test,Y_test)
         preds=model.evaluate(X_test,Y_test)
         print ("Loss = " + str(preds[0]))
