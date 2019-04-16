@@ -196,7 +196,7 @@ def main():
             #print(test.shape)
     #for i in range(5,last):
     #    model.layers[i].trainable=False
-    model.compile(loss = "categorical_crossentropy", optimizer = optimizers.SGD(lr=0.0001, momentum=0.9), metrics=["accuracy"])
+    model.compile(loss = "categorical_crossentropy", optimizer = optimizers.adam(lr=0.001, beta_1=0.9, beta_2=0.999, epsilon=None, decay=0.0, amsgrad=False),metrics=["accuracy"])#optimizers.SGD(lr=0.0001, momentum=0.9), metrics=["accuracy"])
 
     for i in range(len(mask_ids)):
         X_test=np.asarray([X[i]])
