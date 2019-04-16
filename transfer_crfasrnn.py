@@ -211,7 +211,9 @@ def main():
         print(X_train.shape)
         print(Y_train.shape)
         model.fit(X_train,Y_train,epochs=100,batch_size=16)
-        preds=model.predict(X_test,Y_test)
+        preds=model.evaluate(X_test,Y_test)
+        #preds=model.predict(X_test,Y_test)
+        output_file = 'labels.png'
         print ("Loss = " + str(preds[0]))
         print ("Test Accuracy = " + str(preds[1]))
         print('for git')
