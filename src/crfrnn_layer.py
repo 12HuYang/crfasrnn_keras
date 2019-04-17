@@ -59,7 +59,7 @@ def bilateral_ker_weights(shape):
 def compatibility_matrix(shape):
     inits=np.random.randint(2,size=(shape[0],shape[1]))
     weight1=-0.70122886
-    weight2=--0.034997612
+    weight2=-0.034997612
     ans=np.multiply(inits,weight1)
     inits=inits-1
     ans2=np.multiply(inits,-1*weight2)
