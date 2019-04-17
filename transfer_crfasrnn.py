@@ -12,6 +12,7 @@ from keras import optimizers
 from keras.layers import Conv2D, MaxPooling2D, Input, ZeroPadding2D, \
     Dropout, Conv2DTranspose, Cropping2D, Add
 from crfrnn_layer import CrfRnnLayer
+import keras.backend as K
 from keras.preprocessing.image import ImageDataGenerator
 import numpy as np
 import h5py
@@ -66,7 +67,11 @@ for i in range(len(mask_ids)):
     #im = np.pad(im, pad_width=((0, pad_h), (0, pad_w), (0, 0)), mode='constant', constant_values=0)
     #print(im)
 
-
+def iou_loss_core(true,pred):  #this can be used as a loss if you make it negative
+    intersection = true * pred
+    notTrue = 1 - true
+    union = true + (notTrue * pred)
+    return (K.sum(intersection, axis=-1) + K.epsilon()) / (K.sum(union, axis=-1) + K.epsilon())
 
 def main():
     saved_model_path = 'crfrnn_keras_model.h5'
@@ -196,7 +201,7 @@ def main():
             #print(test.shape)
     #for i in range(5,last):
     #    model.layers[i].trainable=False
-    model.compile(loss = "categorical_crossentropy", optimizer = optimizers.adam(lr=0.001, beta_1=0.9, beta_2=0.999, epsilon=None, decay=0.0, amsgrad=False),metrics=["accuracy"])#optimizers.SGD(lr=0.0001, momentum=0.9), metrics=["accuracy"])
+    model.compile(loss = "categorical_crossentropy", optimizer = optimizers.adam(lr=0.001, beta_1=0.9, beta_2=0.999, epsilon=None, decay=0.0, amsgrad=False),metrics=["accuracy",iou_loss_core])#optimizers.SGD(lr=0.0001, momentum=0.9), metrics=["accuracy"])
 
     for i in range(len(mask_ids)):
         X_test=np.asarray([X[i]])
@@ -211,7 +216,7 @@ def main():
         Y_train=np.asarray(Y_train)
         print(X_train.shape)
         print(Y_train.shape)
-        model.fit(X_train,Y_train,epochs=1000,batch_size=16)
+        model.fit(X_train,Y_train,epochs=100,batch_size=16)
         #preds=model.predict(X_test,Y_test)
         preds=model.evaluate(X_test,Y_test)
         print ("Loss = " + str(preds[0]))
