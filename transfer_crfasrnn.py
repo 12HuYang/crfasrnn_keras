@@ -73,7 +73,7 @@ def iou_loss_core(true,pred):  #this can be used as a loss if you make it negati
     union = true + (notTrue * pred)
     return (K.sum(intersection, axis=-1) + K.epsilon()) / (K.sum(union, axis=-1) + K.epsilon())
 
-def main():
+def getmodel():
     saved_model_path = 'crfrnn_keras_model.h5'
     f=h5py.File(saved_model_path)
     #a=list(f.keys())
@@ -203,6 +203,8 @@ def main():
     #    model.layers[i].trainable=False
     model.compile(loss = "categorical_crossentropy", optimizer = optimizers.adam(lr=0.001, beta_1=0.9, beta_2=0.999, epsilon=None, decay=0.0, amsgrad=False),metrics=["accuracy",iou_loss_core])#optimizers.SGD(lr=0.0001, momentum=0.9), metrics=["accuracy"])
 
+    return model
+def main():
     for i in range(len(mask_ids)):
         X_test=np.asarray([X[i]])
         Y_test=np.asarray([Y[i]])
@@ -216,6 +218,7 @@ def main():
         Y_train=np.asarray(Y_train)
         print(X_train.shape)
         print(Y_train.shape)
+        model=getmodel()
         model.fit(X_train,Y_train,epochs=200,batch_size=16)
         #preds=model.predict(X_test,Y_test)
         #preds=model.evaluate(X_test,Y_test)
