@@ -216,12 +216,13 @@ def main():
         Y_train=np.asarray(Y_train)
         print(X_train.shape)
         print(Y_train.shape)
-        model.fit(X_train,Y_train,epochs=100,batch_size=16)
+        model.fit(X_train,Y_train,epochs=200,batch_size=16)
         #preds=model.predict(X_test,Y_test)
-        preds=model.evaluate(X_test,Y_test)
-        print ("Loss = " + str(preds[0]))
-        print ("Test Accuracy = " + str(preds[1]))
+        #preds=model.evaluate(X_test,Y_test)
+        #print ("Loss = " + str(preds[0]))
+        #print ("Test Accuracy = " + str(preds[1]))
         probs = model.predict(X_test, verbose=False)[0, :, :, :]
+        print("Test IU score:"+str(iou_loss_core(Y_test,probs)))
         output_file = 'labels'+str(i)+'.png'
         segmentation = util.get_label_image(probs, 100, 100)
         segmentation.save(output_file)
