@@ -39,25 +39,43 @@ def _potts_model_initializer(shape):
     return -1 * _diagonal_initializer(shape)
 
 def bilateral_ker_weights(shape):
-    inits=np.ones((shape[0],shape[1]),dtype=np.float32)
-    weight=4.664008
-    ans=np.multiply(inits,weight)
+    #inits=np.ones((shape[0],shape[1]),dtype=np.float32)
+    inits=np.random.randint(2,size=(shape[0],shape[1]))
+    #print(inits)
+    weight1=4.664008
+    weight2=0.03647705
+    ans=np.multiply(inits,weight1)
+    #print(ans)
+    inits=inits-1
+    #print(inits)
+    ans2=np.multiply(inits,-1*weight2)
+    #print(ans2)
+    #ans=np.multiply(inits,weight)
+    ans=ans+ans2
     np.fill_diagonal(ans,1.0)
     print(ans)
     return ans
 
 def compatibility_matrix(shape):
-    weight=-0.70122886
-    inits=np.ones((shape[0],shape[1]),dtype=np.float32)
-    ans=np.multiply(inits,weight)
+    inits=np.random.randint(2,size=(shape[0],shape[1]))
+    weight1=-0.70122886
+    weight2=--0.034997612
+    ans=np.multiply(inits,weight1)
+    inits=inits-1
+    ans2=np.multiply(inits,-1*weight2)
+    ans=ans+ans2
     np.fill_diagonal(ans,1.0)
     print(ans)
     return ans
 
 def spatial_ker_weights(shape):
-    weight=2.6849225
-    inits=np.ones((shape[0],shape[1]),dtype=np.float32)
-    ans=np.multiply(inits,weight)
+    inits=np.random.randint(2,size=(shape[0],shape[1]))
+    weight1=2.6849225
+    weight2=0.039296348
+    ans=np.multiply(inits,weight1)
+    inits=inits-1
+    ans2=np.multiply(inits,-1*weight2)
+    ans=ans+ans2
     np.fill_diagonal(ans,1.0)
     print(ans)
     return ans
