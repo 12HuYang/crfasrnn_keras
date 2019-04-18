@@ -2,8 +2,6 @@
 Transfer learning satterlite image using the crfasrnn
 by Yang Hu
 '''
-
-
 import sys
 import os
 sys.path.insert(1, './src')
@@ -184,6 +182,13 @@ def getmodel():
     for i in range(8+3,last-2):
     #for i in range(8,last):
         name=layer_names[i]
+        dropname=name.find('dropout')
+        if dropname!=-1:
+            nameindex=int(name[8])
+            if nameindex!=3 and nameindex!=4:
+                nameindex=nameindex+2
+                print('change dropout layer names')
+                name=dropname[:8]+str(nameindex)
         c=list(f[name])
         model.layers[i].trainable=False
         if len(c)>0:
