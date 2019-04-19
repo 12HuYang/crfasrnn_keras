@@ -193,7 +193,9 @@ def getmodel():
         name=layer_names[i]
         dropname=name.find('dropout')
         if dropname!=-1:
+            print(name)
             nameindex=int(name[8])
+            print(nameindex)
             if nameindex!=3 and nameindex!=4:
                 nameindex=nameindex+2
                 print('change dropout layer names')
