@@ -65,7 +65,7 @@ def compatibility_matrix(shape):
     #inits=inits-1
     #ans2=np.multiply(inits,-1*weight2)
     #ans=ans+ans2
-    np.fill_diagonal(ans,1.0)
+    np.fill_diagonal(ans,-1.0)
     print(ans)
     return ans
 
