@@ -2,15 +2,24 @@
 Transfer learning satterlite image using the crfasrnn
 by Yang Hu
 '''
-import sys
+import tensorflow as tf
 import os
+import keras.backend as K
+def assignGPU(gpu):
+    os.environ["CUDA_VISIBLE_DEVICES"]="%s" % (gpu)
+    config = tf.ConfigProto()
+    config.gpu_options.allow_growth = True
+    K.set_session(tf.Session(config=config))
+
+assignGPU(2)
+
+import sys
 sys.path.insert(1, './src')
 from keras.models import Model
 from keras import optimizers
 from keras.layers import Conv2D, MaxPooling2D, Input, ZeroPadding2D, \
     Dropout, Conv2DTranspose, Cropping2D, Add
 from crfrnn_layer import CrfRnnLayer
-import keras.backend as K
 from keras.preprocessing.image import ImageDataGenerator
 import numpy as np
 import h5py
