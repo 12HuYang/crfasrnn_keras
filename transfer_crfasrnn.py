@@ -196,10 +196,13 @@ def getmodel():
             print(name)
             nameindex=int(name[8])
             print(nameindex)
-            #if nameindex!=3 and nameindex!=4:
-            #    nameindex=nameindex+2
-            #    print('change dropout layer names')
-            #    name=dropname[:8]+str(nameindex)
+            if nameindex>2 and nameindex%2!=0:
+                nameindex=1
+            if nameindex>2 and nameindex%2==0:
+                nameindex=2
+            print('change dropout layer names')
+            name=name[:8]+str(nameindex)
+
         c=list(f[name])
         model.layers[i].trainable=False
         if len(c)>0:
