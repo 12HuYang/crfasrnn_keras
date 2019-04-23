@@ -207,7 +207,7 @@ def getmodel():
             name=name[:8]+str(nameindex)
 
         c=list(f[name])
-        model.layers[i].trainable=False
+        #model.layers[i].trainable=False
         if len(c)>0:
             print(c)
             d=list(f[name][c[0]])
