@@ -104,14 +104,14 @@ def getmodel():
     img_input = Input(shape=input_shape)
     x = ZeroPadding2D(padding=(100, 100))(img_input)
     # VGG-16 convolution block 1
-    #x = Conv2D(3, (3, 3), activation='relu', padding='valid', name='convpre1_1')(x)
-    #x = Conv2D(3, (3, 3), activation='relu', padding='same', name='convpre1_2')(x)
-    #x = MaxPooling2D((2, 2), strides=(1, 1), name='poolpre1')(x)
+    x = Conv2D(3, (3, 3), activation='relu', padding='valid', name='convpre1_1')(x)
+    x = Conv2D(3, (3, 3), activation='relu', padding='same', name='convpre1_2')(x)
+    x = MaxPooling2D((2, 2), strides=(1, 1), name='poolpre1')(x)
 
     # VGG-16 convolution block 2
-    #x = Conv2D(3, (3, 3), activation='relu', padding='same', name='convpre2_1')(x)
-    #x = Conv2D(3, (3, 3), activation='relu', padding='same', name='convpre2_2')(x)
-    #x = MaxPooling2D((2, 2), strides=(1, 1), name='poolpre2', padding='same')(x)
+    x = Conv2D(3, (3, 3), activation='relu', padding='same', name='convpre2_1')(x)
+    x = Conv2D(3, (3, 3), activation='relu', padding='same', name='convpre2_2')(x)
+    x = MaxPooling2D((2, 2), strides=(1, 1), name='poolpre2', padding='same')(x)
 
     # VGG-16 convolution block 1
     x = Conv2D(64, (3, 3), activation='relu', padding='valid', name='conv1_1')(x)
@@ -169,7 +169,7 @@ def getmodel():
     upsample = Conv2DTranspose(5, (16, 16), strides=8, name='upsample', use_bias=False)(score_final)
     upscore = Cropping2D(((39, 37), (39, 37)))(upsample)
 
-    '''
+    
     output = CrfRnnLayer(image_dims=(height, width),
                          num_classes=5,
                          theta_alpha=160.,
@@ -177,8 +177,8 @@ def getmodel():
                          theta_gamma=3.,
                          num_iterations=10,
                          name='crfrnn')([upscore, img_input])
-    '''
-    output=upscore
+    
+    #output=upscore
 
     # Build the model
     model = Model(img_input, output, name='crfrnn_net')
@@ -191,7 +191,7 @@ def getmodel():
     layer_names = [layer.name for layer in model.layers]
     print(layer_names)
     last=layer_names.index('score-fr')
-    for i in range(1+3,last-2):
+    for i in range(8,last-2):
     #for i in range(8,last):
         name=layer_names[i]
         dropname=name.find('dropout')
@@ -241,7 +241,7 @@ def main():
         print(X_train.shape)
         print(Y_train.shape)
         model=getmodel()
-        model.fit(X_train,Y_train,epochs=3000,batch_size=16)
+        model.fit(X_train,Y_train,epochs=400,batch_size=16)
         #preds=model.predict(X_test,Y_test)
         #preds=model.evaluate(X_test,Y_test)
         #print ("Loss = " + str(preds[0]))
