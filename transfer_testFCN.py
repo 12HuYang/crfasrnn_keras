@@ -159,7 +159,7 @@ def getmodel():
     score4 = Conv2DTranspose(5, (5, 5), strides=2, name='score4', use_bias=False)(score_fused)
 
     # Skip connections from pool3
-    score_pool3 = Conv2D(5, (2, 2), name='score-pool3')(pool3)
+    score_pool3 = Conv2D(5, (1, 1), name='score-pool3')(pool3)
     score_pool3c = Cropping2D((8, 8))(score_pool3)
 
     # Fuse things together
