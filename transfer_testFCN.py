@@ -104,17 +104,17 @@ def getmodel():
     img_input = Input(shape=input_shape)
     x = ZeroPadding2D(padding=(100, 100))(img_input)
     # VGG-16 convolution block 1
-    x = Conv2D(3, (3, 3), activation='relu', padding='valid', name='convpre1_1')(x)
-    x = Conv2D(3, (3, 3), activation='relu', padding='same', name='convpre1_2')(x)
-    x = MaxPooling2D((2, 2), strides=(1, 1), name='poolpre1')(x)
+    #x = Conv2D(3, (3, 3), activation='relu', padding='valid', name='convpre1_1')(x)
+    #x = Conv2D(3, (3, 3), activation='relu', padding='same', name='convpre1_2')(x)
+    #x = MaxPooling2D((2, 2), strides=(1, 1), name='poolpre1')(x)
 
     # VGG-16 convolution block 2
-    x = Conv2D(3, (3, 3), activation='relu', padding='same', name='convpre2_1')(x)
-    x = Conv2D(3, (3, 3), activation='relu', padding='same', name='convpre2_2')(x)
-    x = MaxPooling2D((2, 2), strides=(1, 1), name='poolpre2', padding='same')(x)
+    #x = Conv2D(3, (3, 3), activation='relu', padding='same', name='convpre2_1')(x)
+    #x = Conv2D(3, (3, 3), activation='relu', padding='same', name='convpre2_2')(x)
+    #x = MaxPooling2D((2, 2), strides=(1, 1), name='poolpre2', padding='same')(x)
 
     # VGG-16 convolution block 1
-    x = Conv2D(64, (3, 3), activation='relu', padding='same', name='conv1_1')(x)
+    x = Conv2D(64, (3, 3), activation='relu', padding='valid', name='conv1_1')(x)
     x = Conv2D(64, (3, 3), activation='relu', padding='same', name='conv1_2')(x)
     x = MaxPooling2D((2, 2), strides=(2, 2), name='pool1')(x)
 
@@ -159,7 +159,7 @@ def getmodel():
     score4 = Conv2DTranspose(5, (5, 5), strides=2, name='score4', use_bias=False)(score_fused)
 
     # Skip connections from pool3
-    score_pool3 = Conv2D(5, (1, 1), name='score-pool3')(pool3)
+    score_pool3 = Conv2D(5, (2, 2), name='score-pool3')(pool3)
     score_pool3c = Cropping2D((8, 8))(score_pool3)
 
     # Fuse things together
@@ -191,7 +191,7 @@ def getmodel():
     layer_names = [layer.name for layer in model.layers]
     print(layer_names)
     last=layer_names.index('score-fr')
-    for i in range(8+3,last-2):
+    for i in range(1+3,last-2):
     #for i in range(8,last):
         name=layer_names[i]
         dropname=name.find('dropout')
