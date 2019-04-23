@@ -2,10 +2,18 @@
 Transfer learning satterlite image using the crfasrnn
 by Yang Hu
 '''
+import tensorflow as tf
+import os
+import keras.backend as K
+def assignGPU(gpu):
+    os.environ["CUDA_VISIBLE_DEVICES"]="%s" % (gpu)
+    config = tf.ConfigProto()
+    config.gpu_options.allow_growth = True
+    K.set_session(tf.Session(config=config))
 
+assignGPU(2)
 
 import sys
-import os
 sys.path.insert(1, './src')
 from keras.models import Model
 from keras import optimizers
@@ -66,9 +74,13 @@ for i in range(len(mask_ids)):
     #im = np.pad(im, pad_width=((0, pad_h), (0, pad_w), (0, 0)), mode='constant', constant_values=0)
     #print(im)
 
+def iou_loss_core(true,pred):  #this can be used as a loss if you make it negative
+    intersection = true * pred
+    notTrue = 1 - true
+    union = true + (notTrue * pred)
+    return (K.sum(intersection, axis=-1) + K.epsilon()) / (K.sum(union, axis=-1) + K.epsilon())
 
-
-def main():
+def getmodel():
     saved_model_path = 'crfrnn_keras_model.h5'
     f=h5py.File(saved_model_path)
     #a=list(f.keys())
@@ -85,27 +97,8 @@ def main():
     #                print('size of d')
     #                print(len(d))
     #                #print(d)
-    name='crfrnn'
-    rnnweights=np.zeros((3,5,5))
-    c=list(f[name])
-    if len(c)>0:
-        d=list(f[name][c[0]])
-        if len(d)>2:
-            weight=[f[name][c[0]][d[0]],f[name][c[0]][d[1]],f[name][c[0]][d[2]]]
-            weight=np.asarray(weight)
-            print(c)
-            print(d)
-            print(weight[0][0][0])
-            print(weight[1][0][0])
-            print(weight[2][0][0])
-            print(weight[0][0][16])
-            print(weight[1][0][16])
-            print(weight[2][0][16])
-            #print('input_shape,output_shape')
-            #print(model.layers[i].input_shape)
-            #print(model.layers[i].output_shape)
-            #print(list(weight[0]))
-            #print(list(weight[1]))
+
+
 
     input_shape = (height, width, 3)
     img_input = Input(shape=input_shape)
@@ -201,6 +194,18 @@ def main():
     for i in range(8+3,last-2):
     #for i in range(8,last):
         name=layer_names[i]
+        dropname=name.find('dropout')
+        if dropname!=-1:
+            print(name)
+            nameindex=int(name[8])
+            print(nameindex)
+            if nameindex>2 and nameindex%2!=0:
+                nameindex=1
+            if nameindex>2 and nameindex%2==0:
+                nameindex=2
+            print('change dropout layer names')
+            name=name[:8]+str(nameindex)
+
         c=list(f[name])
         model.layers[i].trainable=False
         if len(c)>0:
@@ -218,9 +223,10 @@ def main():
             #print(test.shape)
     #for i in range(5,last):
     #    model.layers[i].trainable=False
+    model.compile(loss = "categorical_crossentropy", optimizer = optimizers.adam(lr=0.001, beta_1=0.9, beta_2=0.999, epsilon=None, decay=0.0, amsgrad=False),metrics=["accuracy",iou_loss_core])#optimizers.SGD(lr=0.0001, momentum=0.9), metrics=["accuracy"])
 
-    model.compile(loss = "categorical_crossentropy", optimizer = optimizers.adam(lr=0.001, beta_1=0.9, beta_2=0.999, epsilon=None, decay=0.0, amsgrad=False),metrics=["accuracy"])#optimizers.SGD(lr=0.0001, momentum=0.9), metrics=["accuracy"])
-
+    return model
+def main():
     for i in range(len(mask_ids)):
         X_test=np.asarray([X[i]])
         Y_test=np.asarray([Y[i]])
@@ -234,12 +240,14 @@ def main():
         Y_train=np.asarray(Y_train)
         print(X_train.shape)
         print(Y_train.shape)
-        model.fit(X_train,Y_train,epochs=1000,batch_size=16)
+        model=getmodel()
+        model.fit(X_train,Y_train,epochs=3000,batch_size=16)
         #preds=model.predict(X_test,Y_test)
-        preds=model.evaluate(X_test,Y_test)
-        print ("Loss = " + str(preds[0]))
-        print ("Test Accuracy = " + str(preds[1]))
+        #preds=model.evaluate(X_test,Y_test)
+        #print ("Loss = " + str(preds[0]))
+        #print ("Test Accuracy = " + str(preds[1]))
         probs = model.predict(X_test, verbose=False)[0, :, :, :]
+        print("Test IU score:"+str(iou_loss_core(Y_test,probs)))
         output_file = 'labels'+str(i)+'.png'
         segmentation = util.get_label_image(probs, 100, 100)
         segmentation.save(output_file)
