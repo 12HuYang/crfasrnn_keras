@@ -172,8 +172,10 @@ def getmodel():
     output = CrfRnnLayer(image_dims=(height, width),
                          num_classes=5,
                          theta_alpha=160.,
-                         theta_beta=3.,
-                         theta_gamma=3.,
+                         #theta_beta=3.,
+                         #theta_gamma=3.,
+                         theta_beta=160.,
+                         theta_gamma=160.,
                          num_iterations=10,
                          name='crfrnn')([upscore, img_input])
 
