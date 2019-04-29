@@ -26,13 +26,13 @@ import h5py
 import util
 from PIL import Image
 
-IMAGE_PATH = './images/'
-MASKS_PATH = './masks/'
+IMAGE_PATH = './images02/'
+MASKS_PATH = './masks02/'
 
 image_ids=[]
 mask_ids=[]
 
-channels, height, width = 3, 100, 100
+channels, height, width = 3, 250, 250
 for root,dirs,image_ids in os.walk(IMAGE_PATH):
     print(image_ids)
 for rroot,rdirs,mask_ids in os.walk(MASKS_PATH):
@@ -102,7 +102,7 @@ def getmodel():
 
     input_shape = (height, width, 3)
     img_input = Input(shape=input_shape)
-    x = ZeroPadding2D(padding=(100, 100))(img_input)
+    x = ZeroPadding2D(padding=(250, 250))(img_input)
     # VGG-16 convolution block 1
     x = Conv2D(3, (3, 3), activation='relu', padding='valid', name='convpre1_1')(x)
     x = Conv2D(3, (3, 3), activation='relu', padding='same', name='convpre1_2')(x)
@@ -159,7 +159,7 @@ def getmodel():
     score4 = Conv2DTranspose(5, (5, 5), strides=2, name='score4', use_bias=False)(score_fused)
 
     # Skip connections from pool3
-    score_pool3 = Conv2D(5, (1, 1), name='score-pool3')(pool3)
+    score_pool3 = Conv2D(5, (2, 2), name='score-pool3')(pool3)
     score_pool3c = Cropping2D((8, 8))(score_pool3)
 
     # Fuse things together
