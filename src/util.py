@@ -71,7 +71,7 @@ def get_preprocessed_image(file_name):
     Note: This method assumes 'channels_last' data format in Keras.
     """
 
-    im = np.array(Image.open(file_name)).astype(np.float32)
+    im = np.array(Image.open(file_name)).astype(np.float32)[:,:,0:3]
     assert im.ndim == 3, 'Only RGB images are supported.'
     im = im - _IMAGENET_MEANS
     im = im[:, :, ::-1]  # Convert to BGR
@@ -82,13 +82,13 @@ def get_preprocessed_image(file_name):
 
     #pad_h = 500 - img_h
     #pad_w = 500 - img_w
-    pad_h=100-img_h
-    pad_w=100-img_w
+    pad_h=250-img_h
+    pad_w=250-img_w
     im = np.pad(im, pad_width=((0, pad_h), (0, pad_w), (0, 0)), mode='constant', constant_values=0)
     return np.expand_dims(im.astype(np.float32), 0), img_h, img_w
 
 def get_preprocessed_label(file_name):
-    im = np.array(Image.open(file_name)).astype(np.float32)
+    im = np.array(Image.open(file_name)).astype(np.float32)[:,:,0:3]
     assert im.ndim == 3, 'Only RGB images are supported.'
     im = im - _IMAGENET_MEANS
     im = im[:, :, ::-1]  # Convert to BGR
@@ -99,8 +99,8 @@ def get_preprocessed_label(file_name):
 
     #pad_h = 500 - img_h
     #pad_w = 500 - img_w
-    pad_h=100-img_h
-    pad_w=100-img_w
+    pad_h=250-img_h
+    pad_w=250-img_w
     im = np.pad(im, pad_width=((0, pad_h), (0, pad_w), (0, 0)), mode='constant', constant_values=0)
 
 
