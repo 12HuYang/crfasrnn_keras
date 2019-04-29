@@ -102,7 +102,7 @@ def getmodel():
 
     input_shape = (height, width, 3)
     img_input = Input(shape=input_shape)
-    x = ZeroPadding2D(padding=(250, 250))(img_input)
+    x = ZeroPadding2D(padding=(100, 100))(img_input)
     # VGG-16 convolution block 1
     x = Conv2D(3, (3, 3), activation='relu', padding='valid', name='convpre1_1')(x)
     x = Conv2D(3, (3, 3), activation='relu', padding='same', name='convpre1_2')(x)
@@ -150,7 +150,7 @@ def getmodel():
     x = Dropout(0.5)(x)
     x = Conv2D(5, (1, 1), padding='valid', name='score-fr')(x)
 
-    score2 = Conv2DTranspose(5, (3, 3), strides=2, name='score2')(x)
+    score2 = Conv2DTranspose(5, (4, 4), strides=2, name='score2')(x)
 
     # Skip connections from pool4
     score_pool4 = Conv2D(5, (1, 1), name='score-pool4')(pool4)
@@ -167,7 +167,7 @@ def getmodel():
 
     # Final up-sampling and cropping
     upsample = Conv2DTranspose(5, (16, 16), strides=8, name='upsample', use_bias=False)(score_final)
-    upscore = Cropping2D(((39, 37), (39, 37)))(upsample)
+    upscore = Cropping2D(((35, 35), (35, 35)))(upsample)
 
     output = CrfRnnLayer(image_dims=(height, width),
                          num_classes=5,
@@ -248,7 +248,7 @@ def main():
         probs = model.predict(X_test, verbose=False)[0, :, :, :]
         print("Test IU score:"+str(iou_loss_core(Y_test,probs)))
         output_file = 'labels'+str(i)+'.png'
-        segmentation = util.get_label_image(probs, 100, 100)
+        segmentation = util.get_label_image(probs, 250, 250)
         segmentation.save(output_file)
 
 
